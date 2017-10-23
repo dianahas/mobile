@@ -1,4 +1,4 @@
-                                                  Hotels management
+# Hotels management #
 
 The application will manage a list of cities which contain hotels. 
 When the application starts, the user must login first (fill the user and password inputs). 
