@@ -1,5 +1,9 @@
 {
   "expo": {
     "sdkVersion": "22.0.0"
-  }
+  },
+
+  "name": "Hotels",
+  "displayName": "Hotels"
+
 }
