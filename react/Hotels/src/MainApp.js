@@ -13,7 +13,7 @@ export default class MainWindow extends React.Component {
     }
 
     edit(hotel) {
-        this.props.navigation.navigate("Hotel", hotel);
+        this.props.navigation.navigate("AddHotelWindow", hotel);
     }
 
     renderRow(hotel) {
@@ -28,14 +28,15 @@ export default class MainWindow extends React.Component {
 
 
     add() {
-        this.props.navigation.navigate("Hotel", {});
+        this.props.navigation.navigate("AddHotelWindow", {});
     }
 
     render() {
         return (
             <View>
                 <Text>Hotels</Text>
-                <ListView dataSource={this.state.dataSource} renderRow={this.renderRow.bind(this)}/>
+                <ListView dataSource={this.state.dataSource}
+                          renderRow={this.renderRow.bind(this)}/>
                 <Button title="Add" onPress={() => this.add()}/>
             </View>
         );

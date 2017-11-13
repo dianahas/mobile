@@ -4,7 +4,6 @@
   "private": true,
   "devDependencies": {
     "react-native-scripts": "1.7.0",
-    "babel-preset-react-native": "4.0.0",
     "jest-expo": "^22.0.0",
     "react-test-renderer": "16.0.0-beta.5"
   },
@@ -24,6 +23,7 @@
     "react": "16.0.0-beta.5",
     "react-mdl": "^1.10.3",
     "react-native": "^0.49.5",
+    "react-native-communications": "^2.2.1",
     "react-navigation": "^1.0.0-beta.19"
   }
 }
