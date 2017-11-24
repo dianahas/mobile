@@ -1,9 +1,7 @@
 package com.example.diana.hotels;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -15,7 +13,7 @@ import android.widget.EditText;
 
 public class ManageHotelActivity extends AppCompatActivity {
 
-    private Button addHotelButton;
+    private Button manageHotelButton;
     private EditText hotelName;
     private EditText hotelLocation;
 
@@ -24,12 +22,18 @@ public class ManageHotelActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.manage_hotel_layout);
 
-        addHotelButton = (Button) findViewById(R.id.addHotel);
-
+        manageHotelButton = (Button) findViewById(R.id.manageHotel);
         hotelName = (EditText) findViewById(R.id.hotelName);
         hotelLocation = (EditText) findViewById(R.id.hotelLocation);
 
-        addHotelButton.setOnClickListener(new View.OnClickListener() {
+        String oldHotelName = getIntent().getStringExtra("name");
+        String oldHotelLocation = getIntent().getStringExtra("location");
+        if(oldHotelName != null && oldHotelLocation != null){
+            hotelName.setText(oldHotelName);
+            hotelLocation.setText(oldHotelLocation);
+        }
+
+        manageHotelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String position = getIntent().getStringExtra("position");

@@ -14,11 +14,4 @@
         android:gravity="center_vertical"
         tools:text="Hotel Name  " />
 
-    <TextView
-        android:id="@+id/hotel_location"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        tools:text="Hotel Location" />
-
 </LinearLayout>

@@ -98,6 +98,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toast.makeText(this, "Hotel selected " + position, Toast.LENGTH_SHORT).show();
 
         Intent intent = new Intent(MainActivity.this, ManageHotelActivity.class);
+        intent.putExtra("name", "" + hotelsRepo.getHotels().get(position).getName());
+        intent.putExtra("location", "" + hotelsRepo.getHotels().get(position).getLocation());
         intent.putExtra("position", "" + position);
         startActivity(intent);
 

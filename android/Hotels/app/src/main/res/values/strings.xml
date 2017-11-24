@@ -21,6 +21,6 @@
     <string name="title_activity_manageHotel">AddNewHotel</string>
     <string name="hotel_location">Hotel Location</string>
     <string name="hotel_name">Hotel Name</string>
-    <string name="add_hotel">Add Hotel</string>
+    <string name="manage_hotel">Manage Hotel</string>
 
 </resources>

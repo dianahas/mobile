@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Linking, TextInput, View} from 'react-native';
+import {StyleSheet, Button, Linking, TextInput, View,Alert} from 'react-native';
 
 export default class AddHotelWindow extends React.Component {
 
@@ -40,8 +40,8 @@ export default class AddHotelWindow extends React.Component {
                 }
             }
         }
+        this.props.navigation.navigate("Home");
         Linking.openURL("mailto:hatmanudiana@gmail.com?subject=HotelsApp&body=" + JSON.stringify(hotel));
-        this.props.navigation.goBack();
     }
 
     render() {

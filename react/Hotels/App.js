@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {StackNavigator} from 'react-navigation';
-import MainWindow from "./src/MainApp";
+import MainWindow from "./src/MainWindow";
 import AddHotelWindow from "./src/AddHotelWindow";
 
 global.hotels = [

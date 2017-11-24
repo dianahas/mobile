@@ -42,7 +42,6 @@ public class HotelsRepo extends RecyclerView.Adapter<HotelsRepo.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         Hotel currentHotel = hotels.get(position);
         holder.hotelName.setText(currentHotel.getName());
-        holder.hotelLocation.setText(currentHotel.getLocation());
     }
 
     @Override
@@ -65,12 +64,10 @@ public class HotelsRepo extends RecyclerView.Adapter<HotelsRepo.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView hotelName;
-        private TextView hotelLocation;
 
         public ViewHolder(View itemView) {
             super(itemView);
             hotelName = (TextView) itemView.findViewById(R.id.hotel_name);
-            hotelLocation = (TextView) itemView.findViewById(R.id.hotel_location);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
