@@ -12,25 +12,21 @@ export default class AddHotelWindow extends React.Component {
             location: ""
         };
 
-        if (this.props.navigation.state.params.id !== undefined) {
-            let currentHotel = this.props.navigation.state.params;
-            this.state.id = currentHotel.id;
-            this.state.name = currentHotel.name;
-            this.state.location = currentHotel.location;
-        }
+        this.repo=props.navigation.state.params.repo;
+
+        // if (this.props.navigation.state.params.id !== undefined) {
+        //     let currentHotel = this.props.navigation.state.params;
+        //     this.state.id = currentHotel.id;
+        //     this.state.name = currentHotel.name;
+        //     this.state.location = currentHotel.location;
+        // }
 
     }
 
     save() {
-        let hotel = {};
         if (this.state.id === 0) {
-            hotel = {
-                id: global.count,
-                name: this.state.name,
-                location: this.state.location,
-            };
-            global.count = global.count + 1;
-            global.hotels.push(hotel);
+            this.repo.handleAddHotel(this.state);
+            console.log("After add" + JSON.stringify(this.repo.data));
         }
         else {
             hotel = this.state;
@@ -41,7 +37,7 @@ export default class AddHotelWindow extends React.Component {
             }
         }
         this.props.navigation.navigate("Home");
-        Linking.openURL("mailto:hatmanudiana@gmail.com?subject=HotelsApp&body=" + JSON.stringify(hotel));
+        Linking.openURL("mailto:hatmanudiana@gmail.com?subject=HotelsApp&body=" + JSON.stringify(this.state));
     }
 
     render() {

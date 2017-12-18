@@ -1,15 +1,20 @@
 import React from 'react';
 import {Button, ListView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {HotelsRepository} from "./HotelsRepository";
 
 export default class MainWindow extends React.Component {
     constructor(props) {
         super(props);
 
+        this.repo = new HotelsRepository();
+        console.log("After Home constr" + JSON.stringify(this.repo.data));
         let dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1.Id !== r2.Id});
 
+
         this.state = {
-            dataSource: dataSource.cloneWithRows(global.hotels)
-        }
+            dataSource: dataSource.cloneWithRows(this.repo.data.listOfHotels)
+        };
+        console.log("Data source" + JSON.stringify(this.state));
     }
 
     edit(hotel) {
@@ -28,7 +33,7 @@ export default class MainWindow extends React.Component {
 
 
     add() {
-        this.props.navigation.navigate("AddHotelWindow", {});
+        this.props.navigation.navigate("AddHotelWindow", {repo:this.repo});
     }
 
     render() {
@@ -62,4 +67,3 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
 });
-
