@@ -18,18 +18,12 @@ import java.util.List;
 
 public class HotelsRepo extends RecyclerView.Adapter<HotelsRepo.ViewHolder> {
 
-    List<Hotel> hotels;
-    HotelsRepoListener hotelsRepoListener;
+    private List<Hotel> hotels;
+    private HotelsRepoListener hotelsRepoListener;
 
-    public HotelsRepo(@Nullable HotelsRepoListener hotelsRepoListener) {
-        hotels = new ArrayList<>();
-        populateHotelList();
+    public HotelsRepo(List<Hotel> hotels, @Nullable HotelsRepoListener hotelsRepoListener) {
+        this.hotels = hotels;
         this.hotelsRepoListener = hotelsRepoListener;
-    }
-
-    private void populateHotelList() {
-        this.hotels.add(new Hotel("aa", "cluj"));
-        this.hotels.add(new Hotel("aaaa", "buc"));
     }
 
     @Override

@@ -5,26 +5,27 @@ package com.example.diana.hotels.model;
  */
 
 public class Hotel {
-    private static Integer hotelId = 0;
+    private Integer id = 0;
     private String name;
     private String location;
 
-    public Hotel(String name, String location) {
-        hotelId ++;
+    public Hotel(Integer id, String name, String location) {
+        this.id = id;
         this.name = name;
         this.location = location;
     }
 
-    public Hotel() {
-        hotelId ++;
+    public Hotel(String name, String location) {
+        this.name = name;
+        this.location = location;
     }
 
-    public Integer getHotelId() {
-        return hotelId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setHotelId(Integer hotelId) {
-        this.hotelId = hotelId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {

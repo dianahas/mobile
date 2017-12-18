@@ -5,4 +5,5 @@ package com.example.diana.hotels.model;
  */
 
 public enum Locations {
+    ITALY, ROMANIA, FRANCE, SUA, UK, SPAIN, RUSSIA
 }
