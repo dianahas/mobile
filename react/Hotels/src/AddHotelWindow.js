@@ -1,5 +1,6 @@
 import React from 'react';
-import {StyleSheet, Button, Linking, TextInput, View,Alert} from 'react-native';
+import {StyleSheet, Button, Linking, TextInput, View, Alert, Picker} from 'react-native';
+import {HotelsRepository} from "./HotelsRepository";
 
 export default class AddHotelWindow extends React.Component {
 
@@ -12,7 +13,7 @@ export default class AddHotelWindow extends React.Component {
             location: ""
         };
 
-        this.repo=props.navigation.state.params.repo;
+        this.repo = new HotelsRepository();
 
         // if (this.props.navigation.state.params.id !== undefined) {
         //     let currentHotel = this.props.navigation.state.params;
@@ -42,31 +43,69 @@ export default class AddHotelWindow extends React.Component {
 
     render() {
         return (
-            <View style={styles.container}>
-                <TextInput style={styles.defaultTextInput}
+            <View style={styles.myView}>
+                <TextInput style={styles.inputText}
                            onChangeText={(name) => this.setState({name})}
                            value={this.state.name.toString()}/>
-                <TextInput style={styles.defaultTextInput}
-                           onChangeText={(location) => this.setState({location})}
-                           value={this.state.location}/>
-                <Button title="save" onPress={() => this.save()}/>
+                <Picker
+                    selectedValue={this.state.location}
+                    onValueChange={(itemValue, itemIndex) => this.setState({location: itemValue})}>
+                    <Picker.Item label="Italy" value="Italy" />
+                    <Picker.Item label="Germany" value="Germany" />
+                    <Picker.Item label="USA" value="USA" />
+                    <Picker.Item label="Romania" value="Romania" />
+                </Picker>
+
+                <View style={styles.myButton}>
+                    <Button title="save" onPress={() => this.save()}/>
+                </View>
+
             </View>
         );
     }
 }
 
 const styles = StyleSheet.create({
-    navbar: {
-        flex:1,
-        flexDirection:"row",
-        justifyContent: "space-around"
+    myView: {
+        height: 600,
+        width: 400,
+        backgroundColor: '#993366'
     },
-    container: { paddingVertical: 60 },
-    titleText: { fontSize:48 },
-    defaultTextInput: { height:40 },
-    defaultMultiLine: {
-        height: 250,
-        textAlignVertical: 'top'
+    myText: {
+        marginTop: 30,
+        fontSize: 60,
+        textAlign: 'center',
+        color: '#ffffcc'
     },
-    defaultButton: {}
+    inputText: {
+        marginTop: 10,
+        marginLeft: 20,
+        height: 30,
+        width: 300,
+        backgroundColor: '#993366',
+        color: '#ffffcc',
+    },
+    inputText1: {
+        marginTop: 10,
+        marginLeft: 20,
+        height: 30,
+        width: 300,
+        backgroundColor: '#993366',
+        color: '#ffffcc',
+    },
+    myButton: {
+        height: 60,
+        width: 100,
+        marginTop: 20,
+        marginLeft: 140,
+        backgroundColor: '#ffffcc',
+        borderRadius: 20,
+        padding: 10,
+        shadowOffset: {
+            width: 0,
+            height: 3
+        },
+        shadowRadius: 10,
+        shadowOpacity: 0.25
+    }
 });

@@ -1,69 +1,85 @@
-import React from 'react';
-import {Button, ListView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {HotelsRepository} from "./HotelsRepository";
+import React from 'react';
+import {Button, StyleSheet, Text, View} from "react-native";
 
-export default class MainWindow extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.repo = new HotelsRepository();
-        console.log("After Home constr" + JSON.stringify(this.repo.data));
-        let dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1.Id !== r2.Id});
-
-
-        this.state = {
-            dataSource: dataSource.cloneWithRows(this.repo.data.listOfHotels)
-        };
-        console.log("Data source" + JSON.stringify(this.state));
+export default class Main extends React.Component {
+    constructor() {
+        super();
+        this._repo = new HotelsRepository();
+        console.log("list from main window" + this._repo.data.listOfHotels)
     }
 
-    edit(hotel) {
-        this.props.navigation.navigate("AddHotelWindow", hotel);
+    onPress1() {
+        this.props.navigation.navigate("HotelsList", {repo: this._repo});
     }
 
-    renderRow(hotel) {
-        return (
-            <TouchableOpacity onPress={() => this.edit(hotel)}>
-                <View>
-                    <Text>{hotel.name}</Text>
-                </View>
-            </TouchableOpacity>
-        );
-    }
-
-
-    add() {
-        this.props.navigation.navigate("AddHotelWindow", {repo:this.repo});
+    onPress2() {
+        this.props.navigation.navigate("AddHotelWindow", {repo: this._repo});
     }
 
     render() {
-        return (
-            <View>
-                <Text>Hotels</Text>
-                <ListView dataSource={this.state.dataSource}
-                          renderRow={this.renderRow.bind(this)}/>
-                <Button title="Add" onPress={() => this.add()}/>
+        return ( //we cand return just one element
+            <View style={styles.myView}>
+                <Text style={styles.myText}>HotelsApp</Text>
+
+                <View style={styles.buttons}>
+                    <View style={styles.myButton}>
+                        <Button onPress={() => this.onPress1()} title="View List" color='#993366'/>
+                    </View>
+
+                    <View style={styles.myButton3}>
+                        <Button onPress={() => this.onPress2()} title="Add" color='#993366'/>
+                    </View>
+
+                </View>
+
             </View>
         );
     }
-
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF',
+    myView: {
+        height: 600,
+        width: 400,
+        backgroundColor: '#993366'
     },
-    welcome: {
-        fontSize: 20,
+    myText: {
+        marginTop: 60,
+        fontSize: 60,
         textAlign: 'center',
-        margin: 10,
+        color: '#ffffcc'
     },
-    instructions: {
-        textAlign: 'center',
-        color: '#333333',
-        marginBottom: 5,
+    buttons: {
+        flexDirection: 'row',
+        marginTop: 200
     },
+    myButton: {
+        height: 100,
+        width: 100,
+        marginLeft: 80,
+        backgroundColor: '#ffffcc',
+        borderRadius: 20,
+        padding: 10,
+        shadowOffset: {
+            width: 0,
+            height: 3
+        },
+        shadowRadius: 10,
+        shadowOpacity: 0.25
+    },
+    myButton3: {
+        height: 100,
+        width: 105,
+        marginLeft: 10,
+        backgroundColor: '#ffffcc',
+        borderRadius: 10,
+        padding: 10,
+        shadowOffset: {
+            width: 0,
+            height: 3
+        },
+        shadowRadius: 10,
+        shadowOpacity: 0.25
+    }
 });

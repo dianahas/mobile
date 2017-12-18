@@ -1,34 +1,26 @@
 import {AsyncStorage} from "react-native";
 import React from "react";
 
-export class HotelsRepository extends React.Component {
-    constructor(props) {
-        super(props);
+export class HotelsRepository {
+    constructor() {
         this.data = {listOfHotels: [], max_id: 0};
         this.updateList().done();
-        console.log("At construct" + JSON.stringify(this.data));
     }
 
-    async updateList()
-    {
-        try
-        {
+    async updateList() {
+        try {
             let response = await AsyncStorage.getItem("listOfHotels");
 
             let parsed = await JSON.parse(response) || {listOfHotels: [], max_id: 0};
             this.data = parsed;
-            console.log("Update " + JSON.stringify(this.data));
         }
-        catch(error)
-        {
+        catch (error) {
             console.log(error);
         }
     }
 
-
-    async handleAddHotel(hotel)
-    {
-        hotel.id=this.data.max_id;
+    async handleAddHotel(hotel) {
+        hotel.id = this.data.max_id;
         let listOfHotels = [...this.data.listOfHotels, {hotel: hotel}];
         let max_id = this.data.max_id + 1;
 
@@ -41,37 +33,36 @@ export class HotelsRepository extends React.Component {
     }
 
 
-    // async handleChangedObject(receipt)
-    // {
-    //     let listOfHotels = this.data.listOfHotels;
-    //     console.log("PUKA",listOfHotels);
-    //     for (let i = 0; i < listOfHotels.length; i++) {
-    //         if (listOfHotels[i].recipe.id === receipt.id) {
-    //             console.log("PUKA");
-    //             listOfHotels[i].recipe=receipt
-    //         }
-    //     }
-    //     await AsyncStorage.setItem("listOfRecipes", JSON.stringify({listOfRecipes: listOfRecipes, max_id: this.data.max_id}));
-    //     this.updateList().done();
-    // }
-    //
-    //
-    // async handleClickedDelete(receipt)
-    // {
-    //     //console.log("Delete: ", index);
-    //
-    //     let listOfRecipes = this.data.listOfRecipes;
-    //     let index=-1;
-    //     for (let i = 0; i < listOfRecipes.length; i++) {
-    //         if (listOfRecipes[i].recipe.id === receipt.id) {
-    //             console.log("PUKA");
-    //             index=i;
-    //         }
-    //     }
-    //     listOfRecipes.splice(index, 1);
-    //
-    //     await AsyncStorage.setItem("listOfRecipes", JSON.stringify({listOfRecipes: listOfRecipes, max_id: this.data.max_id}));
-    //
-    //     this.updateList().done()
-    // }
+    async handleChangedObject(selected) {
+        let listOfHotels = this.data.listOfHotels;
+        for (let i = 0; i < listOfHotels.length; i++) {
+            if (listOfHotels[i].hotel.id === selected.id) {
+                listOfHotels[i].hotel = selected;
+            }
+        }
+        await AsyncStorage.setItem("listOfHotels", JSON.stringify({
+            listOfHotels: listOfHotels,
+            max_id: this.data.max_id
+        }));
+        this.updateList().done();
+    }
+
+
+    async handleClickedDelete(selected) {
+        let listOfHotels = this.data.listOfHotels;
+        let index = -1;
+        for (let i = 0; i < listOfHotels.length; i++) {
+            if (listOfHotels[i].hotel.id === selected.id) {
+                index = i;
+            }
+        }
+        listOfHotels.splice(index, 1);
+
+        await AsyncStorage.setItem("listOfHotels", JSON.stringify({
+            listOfHotels: listOfHotels,
+            max_id: this.data.max_id
+        }));
+
+        this.updateList().done()
+    }
 }
