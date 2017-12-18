@@ -52,7 +52,7 @@ public class ManageHotelActivity extends AppCompatActivity {
         String oldHotelLocation = getIntent().getStringExtra("location");
         if (oldHotelName != null) {
             hotelName.setText(oldHotelName);
-            hotelLocation.setSelection(Locations.valueOf(oldHotelLocation).ordinal());
+            hotelLocation.setSelection(getIndex(hotelLocation, oldHotelLocation));
         }
 
         manageHotelButton.setOnClickListener(new View.OnClickListener() {
@@ -77,6 +77,18 @@ public class ManageHotelActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private int getIndex(Spinner spinner, String myString) {
+        int index = 0;
+
+        for (int i = 0; i < spinner.getCount(); i++) {
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)) {
+                index = i;
+                break;
+            }
+        }
+        return index;
     }
 
     private void sendMail(String hotelName, String hotelLocation) {
