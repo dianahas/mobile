@@ -1,5 +1,6 @@
 package com.example.diana.hotels;
 
+import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -17,6 +18,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.diana.hotels.db.AppDatabase;
+import com.example.diana.hotels.model.User;
+
 /**
  * A login screen that offers login via email/password.
  */
@@ -24,6 +28,8 @@ public class LoginActivity extends AppCompatActivity {
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private Button registerButton;
+    private Button signInButton;
 
     private SharedPreferences mSharedPreferences;
 
@@ -31,10 +37,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
 
-        mPasswordView = (EditText) findViewById(R.id.password);
+        // Set up the login form.
+        mEmailView = findViewById(R.id.email);
+
+        mPasswordView = findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -46,50 +53,44 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        signInButton = findViewById(R.id.email_sign_in_button);
+        signInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 login(mEmailView.getText().toString(), mPasswordView.getText().toString());
             }
         });
 
+        registerButton = findViewById(R.id.registerButton);
+        registerButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
+            }
+        });
         // Get shared preferences used in settings
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        // User already signed in -> go to main screen
-        if (!TextUtils.isEmpty(mSharedPreferences.getString(getString(R.string.key_login_email), ""))) {
-            login();
-        }
     }
 
     private void login(String loginEmail, String loginPassword) {
-        // Check if login email is not empty, if it is empty will not log in
-        if (!TextUtils.isEmpty(loginEmail)) {
-            // Get registered email from shared preferences
-            String registeredEmail = mSharedPreferences.getString(getString(R.string.key_login_email), "");
+        final AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "test").fallbackToDestructiveMigration().allowMainThreadQueries().build();
 
-            // If registered email is empty make the registration for this email and optional password
-            if (TextUtils.isEmpty(registeredEmail)) {
-                // Save the email and optional password to shared preferences
-                SharedPreferences.Editor editor = mSharedPreferences.edit();
-                editor.putString(getString(R.string.key_login_email), loginEmail);
-                editor.putString(getString(R.string.key_login_password), loginPassword);
-                editor.apply();
-                login();
-            } else if (registeredEmail.equals(loginEmail)) {
-                // If registered email is the same with the login email check the optional password
-                String registeredPassword = mSharedPreferences.getString(getString(R.string.key_login_password), "");
-                if (registeredPassword.equals(loginPassword)) {
+        // Check if login email is not empty, if it is empty will not log in
+        if (!TextUtils.isEmpty(loginEmail) && !TextUtils.isEmpty(loginPassword)) {
+
+            User user = db.userDao().findUser(loginEmail);
+
+            if (user != null) {
+                if (user.getPassword().equals(loginPassword)) {
                     login();
                 } else {
                     showToast("Wrong password");
                 }
             } else {
-                showToast("Wrong email");
+                showToast("No user found for that email");
             }
-        } else {
-            showToast("Email missing");
+
         }
     }
 

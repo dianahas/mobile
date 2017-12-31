@@ -1,8 +1,8 @@
 package com.example.diana.hotels;
 
+import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -16,8 +16,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.diana.hotels.db.HotelsDBManager;
+import com.example.diana.hotels.db.AppDatabase;
 import com.example.diana.hotels.model.Hotel;
+import com.example.diana.hotels.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +33,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Button addHotelButton;
     private HotelsRepo hotelsRepo;
 
-    private HotelsDBManager dbManager;
     private List<Hotel> hotels;
+
+    private AppDatabase db;
+    private SharedPreferences mSharedPreferences;
+
 
     ItemTouchHelper.SimpleCallback mSimpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
         @Override
@@ -44,7 +48,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
             Integer hotelId = hotelsRepo.getHotels().get(viewHolder.getAdapterPosition()).getId();
-            dbManager.deleteHotel(hotelId);
+            Hotel hotel = db.hotelDao().getById(hotelId);
+            db.hotelDao().delete(hotel);
             hotelsRepo.getHotels().remove(viewHolder.getAdapterPosition());
             hotelsRepo.notifyItemRemoved(viewHolder.getAdapterPosition());
         }
@@ -54,22 +59,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "test").fallbackToDestructiveMigration().allowMainThreadQueries().build();
 
-        dbManager = HotelsDBManager.getInstance(this);
         getHotels();
 
         hotelsRepo = new HotelsRepo(hotels, this);
 
-        addHotelButton = (Button) findViewById(R.id.add_hotel_button);
+        addHotelButton = findViewById(R.id.add_hotel_button);
         addHotelButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, ManageHotelActivity.class);
-                startActivity(intent);
+                User user = db.userDao().findUser(mSharedPreferences.getString(getString(R.string.key_login_email), ""));
+
+                if (user.isAdmin()) {
+                    Intent intent = new Intent(MainActivity.this, ManageHotelActivity.class);
+                    startActivity(intent);
+
+                } else showToast("You are not an admin, you cannot add a hotel! ");
             }
         });
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
 
@@ -99,22 +111,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void getHotels() {
         // Query Products
-        hotels = dbManager.getAllProducts(true);
+        hotels = db.hotelDao().getAll();
 
         // If Hotels list is empty insert the mock data into DB and query again
         if (hotels.isEmpty()) {
-            dbManager.insertHotels(populateHotelList());
-            hotels = dbManager.getAllProducts(true);
+            List<Hotel> hotelsMock = populateHotelList();
+            for (Hotel hotel : hotelsMock) {
+                db.hotelDao().add(hotel);
+            }
+            hotels = db.hotelDao().getAll();
         }
     }
 
     private List<Hotel> populateHotelList() {
         List<Hotel> hotelsMock = new ArrayList<>();
-        hotelsMock.add(new Hotel(1, "aa", "cluj"));
-        hotelsMock.add(new Hotel(2, "aaaa", "buc"));
+        hotelsMock.add(new Hotel("aa", "cluj"));
+        hotelsMock.add(new Hotel("aaaa", "buc"));
 
         return hotelsMock;
+    }
 
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
 }

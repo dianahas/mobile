@@ -1,19 +1,19 @@
 package com.example.diana.hotels.model;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+
 /**
  * Created by Diana on 07-Nov-17.
  */
 
+@Entity
 public class Hotel {
-    private Integer id = 0;
+
+    @PrimaryKey(autoGenerate = true)
+    private Integer id;
     private String name;
     private String location;
-
-    public Hotel(Integer id, String name, String location) {
-        this.id = id;
-        this.name = name;
-        this.location = location;
-    }
 
     public Hotel(String name, String location) {
         this.name = name;

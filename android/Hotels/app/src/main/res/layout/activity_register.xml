@@ -9,10 +9,10 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.diana.hotels.ManageHotelActivity">
+    tools:context="com.example.diana.hotels.RegisterActivity">
 
     <LinearLayout
-        android:id="@+id/add_hotel_form"
+        android:id="@+id/register_user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -22,24 +22,44 @@
             android:layout_height="wrap_content">
 
             <EditText
-                android:id="@+id/hotelName"
+                android:id="@+id/email"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="@string/hotel_name" />
+                android:hint="@string/prompt_email"
+                android:inputType="textEmailAddress"
+                android:maxLines="1"
+                android:singleLine="true" />
+
         </android.support.design.widget.TextInputLayout>
 
-        <Spinner
-            android:id="@+id/locationSpinner"
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/hotel_location" />
+            android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/manageHotel"
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_password"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:singleLine="true" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/isAdmin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/manage_hotel" />
+            android:text="@string/user_admin" />
+
+        <Button
+            android:id="@+id/registerUserButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/register_user" />
 
     </LinearLayout>
 </LinearLayout>
