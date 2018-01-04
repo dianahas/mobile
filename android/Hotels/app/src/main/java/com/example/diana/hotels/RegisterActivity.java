@@ -1,7 +1,6 @@
 package com.example.diana.hotels;
 
 import android.arch.persistence.room.Room;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -59,7 +58,7 @@ public class RegisterActivity extends AppCompatActivity {
                     User user = new User(email, password, isAdmin);
                     db.userDao().add(user);
 
-//                    Intent intent = new Intent(getApplicationContext(), MainActivity.this);
+//                    Intent intent = new Intent(this, MainActivity.this);
 //                    startActivity(intent);
                 } else invalid();
             }

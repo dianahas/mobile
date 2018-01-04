@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -18,9 +19,15 @@ import com.example.diana.hotels.db.AppDatabase;
 import com.example.diana.hotels.model.Hotel;
 import com.example.diana.hotels.model.Locations;
 import com.example.diana.hotels.model.User;
+import com.example.diana.hotels.services.ApiClient;
+import com.example.diana.hotels.services.ApiService;
 
 import java.util.Arrays;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Diana on 08-Nov-17.
@@ -33,6 +40,8 @@ public class ManageHotelActivity extends AppCompatActivity {
     private Spinner hotelLocation;
     private SharedPreferences mSharedPreferences;
 
+    private ApiService apiService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +50,8 @@ public class ManageHotelActivity extends AppCompatActivity {
         List<Locations> locations = Arrays.asList(Locations.values());
         ArrayAdapter<Locations> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, locations);
+
+        apiService = ApiClient.getClient().create(ApiService.class);
 
         final AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "test").fallbackToDestructiveMigration().allowMainThreadQueries().build();
 
@@ -71,13 +82,15 @@ public class ManageHotelActivity extends AppCompatActivity {
                         Integer id = Integer.parseInt(hotelId);
                         Hotel hotel = new Hotel(name, location);
                         hotel.setId(id);
-                        db.hotelDao().update(hotel);
+                        //db.hotelDao().update(hotel);
+                        updateToServer(hotel);
 
                     } else showToast("You are not admin, you cannot edit!");
 
                 } else {
                     Hotel hotel = new Hotel(name, location);
-                    db.hotelDao().add(hotel);
+                    //db.hotelDao().add(hotel);
+                    addToServer(hotel);
                     sendMail(name, location);
                 }
 
@@ -87,6 +100,46 @@ public class ManageHotelActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void addToServer(Hotel hotel) {
+        apiService.addHotel(hotel).enqueue(new Callback<Hotel>() {
+            @Override
+            public void onResponse(Call<Hotel> call, Response<Hotel> response) {
+
+                if (response.isSuccessful()) {
+                    Log.d("ManageHotelActivity", "posts loaded from API");
+                } else {
+                    int statusCode = response.code();
+                    // handle request errors depending on status code
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Hotel> call, Throwable t) {
+                Log.d("ManageHotelActivity", "error loading from API");
+            }
+        });
+    }
+
+    private void updateToServer(Hotel hotel) {
+        apiService.update(hotel.getId(), hotel).enqueue(new Callback<Hotel>() {
+            @Override
+            public void onResponse(Call<Hotel> call, Response<Hotel> response) {
+
+                if (response.isSuccessful()) {
+                    Log.d("ManageHotelActivity", "posts loaded from API");
+                } else {
+                    int statusCode = response.code();
+                    // handle request errors depending on status code
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Hotel> call, Throwable t) {
+                Log.d("ManageHotelActivity", "error loading from API");
+            }
+        });
     }
 
     private int getIndex(Spinner spinner, String myString) {
