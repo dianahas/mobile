@@ -1,9 +1,11 @@
 package com.example.diana.hotels;
 
 import android.arch.persistence.room.Room;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Patterns;
 import android.view.View;
@@ -14,6 +16,12 @@ import android.widget.Toast;
 
 import com.example.diana.hotels.db.AppDatabase;
 import com.example.diana.hotels.model.User;
+import com.example.diana.hotels.services.ApiClient;
+import com.example.diana.hotels.services.ApiService;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by dianahas on 12/31/2017.
@@ -28,6 +36,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     private SharedPreferences mSharedPreferences;
 
+    private ApiService apiService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +45,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         final AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "test").fallbackToDestructiveMigration().allowMainThreadQueries().build();
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        apiService = ApiClient.getClient().create(ApiService.class);
 
         // Set up the login form.
         emailView = findViewById(R.id.email);
@@ -56,14 +68,31 @@ public class RegisterActivity extends AppCompatActivity {
                     editor.apply();
 
                     User user = new User(email, password, isAdmin);
-                    db.userDao().add(user);
+                    //db.userDao().add(user);
 
-//                    Intent intent = new Intent(this, MainActivity.this);
-//                    startActivity(intent);
+                    addUserToServer(user);
+
                 } else invalid();
             }
         });
 
+    }
+
+    private void addUserToServer(User user) {
+        Call<User> call1 = apiService.addUser(user);
+        call1.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
+                if (response.isSuccessful()) {
+                    return;
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+                call.cancel();
+            }
+        });
     }
 
     private void invalid() {

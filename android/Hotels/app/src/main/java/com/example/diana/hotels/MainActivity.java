@@ -3,7 +3,6 @@ package com.example.diana.hotels;
 import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -59,9 +58,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
             Integer hotelId = hotelsRepo.getHotels().get(viewHolder.getAdapterPosition()).getId();
-            Hotel hotel = db.hotelDao().getById(hotelId);
-            db.hotelDao().delete(hotel);
-            deleteFromServer(hotelId);
+//            Hotel hotel = db.hotelDao().getById(hotelId);
+//            db.hotelDao().delete(hotel);
+            deleteHotel(hotelId);
+
             hotelsRepo.getHotels().remove(viewHolder.getAdapterPosition());
             hotelsRepo.notifyItemRemoved(viewHolder.getAdapterPosition());
         }
@@ -84,21 +84,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public void onClick(View view) {
-                User user = db.userDao().findUser(mSharedPreferences.getString(getString(R.string.key_login_email), ""));
-
-                if (user.isAdmin()) {
-                    Intent intent = new Intent(MainActivity.this, ManageHotelActivity.class);
-                    startActivity(intent);
-
-                } else showToast("You are not an admin, you cannot add a hotel! ");
+                addUser(mSharedPreferences.getString(getString(R.string.key_login_email), ""));
             }
         });
 
         mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setAdapter(hotelsRepo);
-
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(mSimpleItemTouchCallback);
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
@@ -113,6 +105,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         getHotelsFromServer();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        getHotelsFromServer();
     }
 
     @Override
@@ -132,6 +131,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return false;
     }
 
+    private void addUser(String loginEmail) {
+        Call<User> call1 = apiService.getUser(loginEmail);
+        call1.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
+                if (response.isSuccessful()) {
+                    User user = response.body();
+
+                    if (user != null && user.isAdmin()) {
+                        Intent intent = new Intent(MainActivity.this, ManageHotelActivity.class);
+                        startActivity(intent);
+
+                    } else showToast("You are not an admin, you cannot add a hotel! ");
+
+                } else {
+                    showToast("No user found for that email");
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+                call.cancel();
+            }
+        });
+    }
+
     private void getHotelsFromServer() {
         apiService.getHotels().enqueue(new Callback<List<Hotel>>() {
             @Override
@@ -140,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (response.isSuccessful()) {
                     hotels = response.body();
                     hotelsRepo.setHotels(hotels);
+                    mRecyclerView.setAdapter(hotelsRepo);
                     Log.d("MainActivity", "posts loaded from API");
                 } else {
                     int statusCode = response.code();
@@ -155,13 +182,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    private void deleteFromServer(Integer hotelId) {
-        apiService.delete(hotelId).enqueue(new Callback<Hotel>() {
+    private void deleteHotel(Integer hotelId) {
+        apiService.getHotel(hotelId).enqueue(new Callback<Hotel>() {
             @Override
             public void onResponse(Call<Hotel> call, Response<Hotel> response) {
 
                 if (response.isSuccessful()) {
-                    Log.d("MainActivity", "posts loaded from API");
+                    Log.d("MainActivity", "hotel deleted");
+                    Hotel hotel = response.body();
+                    deleteFromServer(hotel);
                 } else {
                     int statusCode = response.code();
                     // handle request errors depending on status code
@@ -175,12 +204,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    private List<Hotel> populateHotelList() {
-        List<Hotel> hotelsMock = new ArrayList<>();
-        hotelsMock.add(new Hotel("aa", "cluj"));
-        hotelsMock.add(new Hotel("aaaa", "buc"));
+    private void deleteFromServer(Hotel hotel) {
+        apiService.delete(hotel.getId(), hotel).enqueue(new Callback<Hotel>() {
+            @Override
+            public void onResponse(Call<Hotel> call, Response<Hotel> response) {
 
-        return hotelsMock;
+                if (response.isSuccessful()) {
+                    Log.d("MainActivity", "hotel deleted");
+                } else {
+                    int statusCode = response.code();
+                    // handle request errors depending on status code
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Hotel> call, Throwable t) {
+                Log.d("MainActivity", "error loading from API");
+            }
+        });
     }
 
     private void showToast(String message) {

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -76,16 +77,13 @@ public class ManageHotelActivity extends AppCompatActivity {
                 String name = hotelName.getText().toString();
                 String location = hotelLocation.getSelectedItem().toString();
                 if (hotelId != null) {
-                    User user = db.userDao().findUser(mSharedPreferences.getString(getString(R.string.key_login_email), ""));
 
-                    if (user.isAdmin()) {
-                        Integer id = Integer.parseInt(hotelId);
-                        Hotel hotel = new Hotel(name, location);
-                        hotel.setId(id);
-                        //db.hotelDao().update(hotel);
-                        updateToServer(hotel);
+                    Integer id = Integer.parseInt(hotelId);
+                    Hotel hotel = new Hotel(name, location);
+                    hotel.setId(id);
+                    //db.hotelDao().update(hotel);
+                    updateToServer(hotel);
 
-                    } else showToast("You are not admin, you cannot edit!");
 
                 } else {
                     Hotel hotel = new Hotel(name, location);
@@ -123,7 +121,7 @@ public class ManageHotelActivity extends AppCompatActivity {
     }
 
     private void updateToServer(Hotel hotel) {
-        apiService.update(hotel.getId(), hotel).enqueue(new Callback<Hotel>() {
+        apiService.update(hotel).enqueue(new Callback<Hotel>() {
             @Override
             public void onResponse(Call<Hotel> call, Response<Hotel> response) {
 

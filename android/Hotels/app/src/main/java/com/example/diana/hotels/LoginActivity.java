@@ -25,6 +25,9 @@ import com.example.diana.hotels.model.User;
 import com.example.diana.hotels.services.ApiClient;
 import com.example.diana.hotels.services.ApiService;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -94,19 +97,30 @@ public class LoginActivity extends AppCompatActivity {
         // Check if login email is not empty, if it is empty will not log in
         if (!TextUtils.isEmpty(loginEmail) && !TextUtils.isEmpty(loginPassword)) {
 
-            User user = db.userDao().findUser(loginEmail);
+            findUser(loginEmail);
+        }
+    }
 
-            if (user != null) {
-                if (user.getPassword().equals(loginPassword)) {
+    private void findUser(String loginEmail) {
+        Call<User> call1 = apiService.getUser(loginEmail);
+        call1.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
+                if (response.isSuccessful()) {
+                    User user = response.body();
                     loginToServer(user);
+
                 } else {
-                    showToast("Wrong password");
+                    showToast("No user found for that email");
                 }
-            } else {
-                showToast("No user found for that email");
+
             }
 
-        }
+            @Override
+            public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+                call.cancel();
+            }
+        });
     }
 
     private void login() {
