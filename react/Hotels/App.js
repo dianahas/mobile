@@ -5,10 +5,14 @@ import MainWindow from "./src/MainWindow";
 import AddHotelWindow from "./src/AddHotelWindow";
 import HotelsList from "./src/HotelsList";
 import ManageHotelWindow from "./src/ManageHotelWindow";
-import LoginWindow from "./src/LoginWindow";
+import HotelsAppWindow from "./src/HotelsAppWindow";
 import RegisterWindow from "./src/RegisterWindow";
+import LoginWindow from "./src/LoginWindow";
 
 const ModalStack = StackNavigator({
+    HotelsApp: {
+        screen: HotelsAppWindow
+    },
     Login: {
         screen: LoginWindow
     },

@@ -1,36 +1,39 @@
-import {HotelsRepository} from "./HotelsRepository";
-import React from 'react';
+import React from "react";
 import {Button, StyleSheet, Text, View} from "react-native";
+import {UserRepository} from "./UserRepository";
 
-export default class Main extends React.Component {
+export default class HotelsAppWindow extends React.Component {
     constructor() {
         super();
-        this._repo = new HotelsRepository();
-        console.log("list from main window" + this._repo.data.listOfHotels)
+        this.state = {
+            email: '',
+            password: ''
+        };
+
+        this.userRepo = new UserRepository();
+        console.log("list from main window" + this.userRepo.users.listOfUsers)
     }
 
-    onPress1() {
-        this.props.navigation.navigate("HotelsList", {repo: this._repo});
+    login() {
+        this.props.navigation.navigate("Login", {userRepo: this.userRepo});
     }
 
-    onPress2() {
-        this.props.navigation.navigate("AddHotelWindow", {repo: this._repo});
+    register() {
+        this.props.navigation.navigate("Register", {userRepo: this.userRepo});
     }
 
     render() {
         return (
             <View style={styles.myView}>
-                <Text style={styles.myText}>HotelsApp</Text>
+                <Text style={styles.myText}>Welcome to Hotels App!!</Text>
 
                 <View style={styles.buttons}>
                     <View style={styles.myButton}>
-                        <Button onPress={() => this.onPress1()} title="View List" color='#993366'/>
+                        <Button onPress={() => this.login()} title="Login" color='#993366'/>
                     </View>
-
                     <View style={styles.myButton3}>
-                        <Button onPress={() => this.onPress2()} title="Add" color='#993366'/>
+                        <Button onPress={() => this.register()} title="Register" color='#993366'/>
                     </View>
-
                 </View>
 
             </View>
@@ -46,7 +49,7 @@ const styles = StyleSheet.create({
     },
     myText: {
         marginTop: 60,
-        fontSize: 60,
+        fontSize: 40,
         textAlign: 'center',
         color: '#ffffcc'
     },
@@ -73,7 +76,7 @@ const styles = StyleSheet.create({
         width: 105,
         marginLeft: 10,
         backgroundColor: '#ffffcc',
-        borderRadius: 10,
+        borderRadius: 20,
         padding: 10,
         shadowOffset: {
             width: 0,
